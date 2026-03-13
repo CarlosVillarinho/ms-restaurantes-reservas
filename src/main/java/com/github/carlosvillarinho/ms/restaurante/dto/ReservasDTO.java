@@ -27,14 +27,14 @@ public class ReservasDTO {
     @Positive(message = "Quantidade de pessoa deve ser um numero inteiro maior que zero")
     private Integer qtdPessoas;
 
-    @NotNull(message = "Campo restaurante é requerido")
-    private RestaurantesDTO restaurantes;
+//    @NotNull(message = "Campo restaurante é requerido")
+//    private RestaurantesDTO restaurantes;
 
     public ReservasDTO(Reservas reservas) {
         id = reservas.getId();
         dataReserva = reservas.getDataReserva();
         nomeCliente = reservas.getNomeCliente();
         qtdPessoas = reservas.getQtdPessoas();
-        restaurantes = new RestaurantesDTO();
+//        restaurantes = new RestaurantesDTO();
     }
 }
