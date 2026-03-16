@@ -3,6 +3,9 @@ package com.github.carlosvillarinho.ms.restaurante.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -20,4 +23,8 @@ public class Restaurantes {
     private String endereco;
     private String cidade;
     private String uf;
+
+    //RELAÇÃO
+    @OneToMany(mappedBy = "Restaurantes")
+    private List<Reservas> reservas = new ArrayList<>();
 }

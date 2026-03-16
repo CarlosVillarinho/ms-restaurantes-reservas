@@ -2,10 +2,12 @@ package com.github.carlosvillarinho.ms.restaurante.service;
 
 import com.github.carlosvillarinho.ms.restaurante.dto.RestaurantesDTO;
 import com.github.carlosvillarinho.ms.restaurante.entities.Restaurantes;
+import com.github.carlosvillarinho.ms.restaurante.exceptions.DatabaseException;
 import com.github.carlosvillarinho.ms.restaurante.exceptions.ResourceNotFoundException;
 import com.github.carlosvillarinho.ms.restaurante.repositories.RestaurantesRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +21,7 @@ public class RestaurantesService {
     //METODOS
     @Transactional(readOnly = true)
     public List<RestaurantesDTO> findAllRestauranes() {
-        List<Restaurantes> restaurantes = restaurantesRepository.findAll();
-        return restaurantes.stream().map(RestaurantesDTO::new).toList();
+        return restaurantesRepository.findAll().stream().map(RestaurantesDTO::new).toList();
     }
 
     @Transactional(readOnly = true)
@@ -32,25 +33,25 @@ public class RestaurantesService {
     }
 
     @Transactional
-    public RestaurantesDTO saveRestaurante(RestaurantesDTO restaurantesDTO) {
+    public RestaurantesDTO saveRestaurante(RestaurantesDTO inputDTO) {
         Restaurantes restaurantes = new Restaurantes();
-        copyDtoToRestaurantes(restaurantesDTO, restaurantes);
+        mapDtoToRestaurantes(inputDTO, restaurantes);
         restaurantes = restaurantesRepository.save(restaurantes);
         return new RestaurantesDTO(restaurantes);
     }
 
-    private void copyDtoToRestaurantes(RestaurantesDTO restaurantesDTO, Restaurantes restaurantes) {
-        restaurantes.setNome(restaurantesDTO.getNome());
-        restaurantes.setEndereco(restaurantesDTO.getEndereco());
-        restaurantes.setCidade(restaurantesDTO.getCidade());
-        restaurantes.setUf(restaurantesDTO.getUf());
+    private void mapDtoToRestaurantes(RestaurantesDTO inputDTO, Restaurantes restaurantes) {
+        restaurantes.setNome(inputDTO.getNome());
+        restaurantes.setEndereco(inputDTO.getEndereco());
+        restaurantes.setCidade(inputDTO.getCidade());
+        restaurantes.setUf(inputDTO.getUf());
     }
 
     @Transactional
     public RestaurantesDTO updateRestaurantes(Long id, RestaurantesDTO restaurantesDTO) {
         try {
             Restaurantes restaurantes = restaurantesRepository.getReferenceById(id);
-            copyDtoToRestaurantes(restaurantesDTO, restaurantes);
+            mapDtoToRestaurantes(restaurantesDTO, restaurantes);
             restaurantes = restaurantesRepository.save(restaurantes);
             return new RestaurantesDTO(restaurantes);
         } catch (EntityNotFoundException e) {
@@ -63,6 +64,11 @@ public class RestaurantesService {
         if(!restaurantesRepository.existsById(id)){
             throw new ResourceNotFoundException("Recurso não encontrado. ID: " + id);
         }
-        restaurantesRepository.deleteById(id);
+
+        try {
+            restaurantesRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e){
+            throw new DatabaseException("Não foi possivel excluir este restaurante. Existem reservas associadas a ele");
+        }
     }
 }

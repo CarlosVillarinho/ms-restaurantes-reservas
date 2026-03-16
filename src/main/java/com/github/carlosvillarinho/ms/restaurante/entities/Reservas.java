@@ -22,4 +22,9 @@ public class Reservas {
     private LocalDate dataReserva;
     private String nomeCliente;
     private Integer qtdPessoas;
+
+    //RELAÇÃO
+    @ManyToOne
+    @JoinColumn(name = "restaurantes_id", nullable = false)
+    private Restaurantes restaurantes;
 }
