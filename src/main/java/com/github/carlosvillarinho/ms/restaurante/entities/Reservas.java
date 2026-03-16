@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Setter
 @EqualsAndHashCode(of = "id")
 @Entity
-@RequestMapping(name = "tb_reservas")
+@Table(name = "tb_reservas")
 public class Reservas {
     //ATRIBUTOS
     @Id

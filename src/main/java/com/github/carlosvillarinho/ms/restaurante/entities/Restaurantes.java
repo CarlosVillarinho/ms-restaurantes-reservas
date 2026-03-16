@@ -25,6 +25,6 @@ public class Restaurantes {
     private String uf;
 
     //RELAÇÃO
-    @OneToMany(mappedBy = "Restaurantes")
+    @OneToMany(mappedBy = "restaurantes")
     private List<Reservas> reservas = new ArrayList<>();
 }
